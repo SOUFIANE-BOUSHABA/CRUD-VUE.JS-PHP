@@ -35,7 +35,7 @@ export default {
   methods: {
     saveStudent() {
       
-      axios.post('http://your-api-url/student', this.student)
+      axios.post('http://localhost:8081/server/api.php', this.student)
         .then(response => {
           
           console.log(response.data);
