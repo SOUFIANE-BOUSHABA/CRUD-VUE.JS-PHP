@@ -78,6 +78,27 @@ if ($action == 'deleteuser' && isset($_GET['id'])) {
     }
 }
 
+if ($action == 'updateuser') {
+    
+    $userId = $_POST['id'];
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $education = $_POST['education'];
+    $secondname = $_POST['secondname'];
+
+    $sql = "UPDATE `user` SET `firstname`='$name', `email`='$email', `education`='$education', `secondname`='$secondname' WHERE `id`='$userId'";
+    $result = $conn->query($sql);
+
+    if ($result === true) {
+        $res['error'] = false;
+        $res['message'] = "User Updated Successfully";
+    } else {
+        $res['error'] = true;
+        $res['message'] = "Something Went Wrong";
+        $res['sql_error'] = $conn->error;
+    }
+}
+
 
 $conn->close();
 header("Content-type: application/json");

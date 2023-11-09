@@ -33,14 +33,24 @@
             </div>
               </form>
 
-    <div v-if="Users.length > 0">
-      <h2>Registered Users</h2>
-      <ul>
-        <li v-for="user in Users" :key="user.id">
-          {{ user.name }} - {{ user.email }} - {{ user.education }} - {{ user.secondname }}    <button @click="deleteUser(user.id)">Delete</button>
-        </li>
-      </ul>
-    </div>
+    <li v-for="user in Users" :key="user.id">
+  {{ user.firstname }} - {{ user.email }} - {{ user.education }} - {{ user.secondname }}
+  <button @click="deleteUser(user.id)">Delete</button>
+  <button @click="showUpdateForm(user)">Update</button>
+</li>
+
+<!-- Add the update form -->
+<div v-if="showUpdateFormFlag">
+  <form @submit.prevent="updateUser">
+    <label for="updateName">Name</label>
+    <input type="text" name="updateName" v-model="updateUserData.firstname">
+     <input type="text" name="email" v-model="updateUserData.email">
+      <input type="text" name="education" v-model="updateUserData.education">
+       <input type="text" name="secondname" v-model="updateUserData.secondname">
+
+    <button type="submit" >Update User</button>
+  </form>
+</div>
    
   </div>
 </template>
@@ -51,11 +61,19 @@ import axios from 'axios';
 export default {
  data() {
   return {
+     showUpdateFormFlag: false,
+    updateUserData: {
+      id: null,
+      firstname: null,
+      email: null,
+      education: null,
+      secondname: null,
+    },
     UsersData: {
       name: null,
       email: null,
       education: null,
-      secondname: null, // Fix: use secondname instead of gender
+      secondname: null, 
     },
     Users: [],
   };
@@ -96,8 +114,48 @@ methods: {
     axios.delete(`http://localhost/CRUD-VUE.JS-PHP/backend/api.php?action=deleteuser&id=${userId}`)
       .then((response) => {
         if (!response.data.error) {
-          // Update the Users array after successful deletion
           this.Users = this.Users.filter(user => user.id !== userId);
+        } else {
+          console.error(response.data.message);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  },
+
+  showUpdateForm(user) {
+    this.showUpdateFormFlag = true;
+    this.updateUserData = { ...user };
+  },
+
+ hideUpdateForm() {
+    this.showUpdateFormFlag = false;
+    this.updateUserData = {
+      id: null,
+      name: null,
+      email: null,
+      education: null,
+      secondname: null,
+    };
+  },
+
+   updateUser() {
+    let data = new FormData();
+    data.append("id", this.updateUserData.id);
+    data.append("name", this.updateUserData.name);
+    data.append("email", this.updateUserData.email);
+    data.append("education", this.updateUserData.education);
+    data.append("secondname", this.updateUserData.secondname);
+
+    axios.put('http://localhost/CRUD-VUE.JS-PHP/backend/api.php?action=updateuser', data)
+      .then((response) => {
+        if (!response.data.error) {
+          const index = this.Users.findIndex(user => user.id === this.updateUserData.id);
+          if (index !== -1) {
+            this.Users.splice(index, 1, this.updateUserData);
+          }
+          this.hideUpdateForm();
         } else {
           console.error(response.data.message);
         }
@@ -117,5 +175,5 @@ methods: {
 </script>
 
 <style>
-/* Ajoutez vos styles CSS ici si nécessaire */
+
 </style>
