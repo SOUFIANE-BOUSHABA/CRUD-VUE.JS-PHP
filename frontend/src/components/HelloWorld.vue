@@ -1,58 +1,106 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div>
+    <form action="" method="POST">
+
+            <div class="modal-body">
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" class="form-control" id="name" placeholder="Name" v-model="UsersData.name">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="email">Email</label>
+                    <input type="text" name="email" class="form-control" id="email" placeholder="Email" v-model="UsersData.email" >
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="name">Highest Education</label>
+                    <input type="text" name="education" class="form-control" id="education" placeholder="education" v-model="UsersData.education" >
+                    
+                  </div>
+                  <div class="form-group col-md-6 mt-4">
+                    <input type="text" name="secondname" class="form-control" id="secondname" placeholder="secondname" v-model="UsersData.secondname" >
+                   
+
+                  </div>
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button  type="button" class="btn btn-primary" @click="AddUsers()">Add Users</button>
+            </div>
+              </form>
+
+    <div v-if="Users.length > 0">
+      <h2>Registered Users</h2>
+      <ul>
+        <li v-for="user in Users" :key="user.id">
+          {{ user.name }} - {{ user.email }} - {{ user.education }} - {{ user.secondname }}   <button>delete</button>
+        </li>
+      </ul>
+    </div>
+   
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+ data() {
+  return {
+    UsersData: {
+      name: null,
+      email: null,
+      education: null,
+      secondname: null, // Fix: use secondname instead of gender
+    },
+    Users: [],
+  };
+},
+
+methods: {
+  AddUsers() {
+    let data = new FormData();
+    data.append("name", this.UsersData.name);
+    data.append("email", this.UsersData.email);
+    data.append("education", this.UsersData.education);
+    data.append("secondname", this.UsersData.secondname); 
+    console.log(data);
+    axios.post('http://localhost/CRUD-VUE.JS-PHP/backend/api.php?action=addusers', data)
+     .then((response) => {
+          console.log(response.data);
+        }).catch((err) => {
+          
+     console.error(err);
+    });
+  },
+
+  getUsers() {
+      axios.get('http://localhost/CRUD-VUE.JS-PHP/backend/api.php?action=getusers')
+        .then((response) => {
+          if (!response.data.error) {
+            this.Users = response.data.users;
+          } else {
+            console.error(response.data.message);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+  },
+
+  created() {
+    this.getUsers();
+
+},
+
+};
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+<style>
+/* Ajoutez vos styles CSS ici si nécessaire */
 </style>
