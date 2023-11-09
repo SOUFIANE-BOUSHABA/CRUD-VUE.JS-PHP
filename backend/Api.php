@@ -7,7 +7,6 @@ if (isset($_SERVER['HTTP_ORIGIN'])) {
     header('Access-Control-Allow-Credentials: true');
     header('Access-Control-Max-Age: 1000');
 }
-
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
         header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
@@ -18,23 +17,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     }
     exit(0);
 }
-
 $res = array('error' => false);
 $action = '';
-
 if (isset($_GET['action'])) {
     $action = $_GET['action'];
 }
-
 if ($action == 'addusers') {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $education = $_POST['education'];
     $sec = $_POST['secondname'];
-
     $sql = "INSERT INTO `user`(`id`, `firstname`, `email`, `education`, `secondname`) VALUES(NULL,'$name','$email','$education','$sec')";
     $result = $conn->query($sql);
-
     if ($result === true) {
         $res['error'] = false;
         $res['message'] = "User Added Successfully";
@@ -44,7 +38,6 @@ if ($action == 'addusers') {
         $res['sql_error'] = $conn->error; 
     }
 }
-
 if ($action == 'getusers') {
     $sql = "SELECT * FROM `user`";
     $result = $conn->query($sql);
@@ -61,8 +54,6 @@ if ($action == 'getusers') {
         $res['message'] = "No Users Found";
     }
 }
-
-
 if ($action == 'deleteuser' && isset($_GET['id'])) {
     $userId = $_GET['id'];
     $sql = "DELETE FROM `user` WHERE `id` = $userId";
@@ -77,18 +68,14 @@ if ($action == 'deleteuser' && isset($_GET['id'])) {
         $res['sql_error'] = $conn->error; 
     }
 }
-
 if ($action == 'updateuser') {
-    
     $userId = $_POST['id'];
     $name = $_POST['name'];
     $email = $_POST['email'];
     $education = $_POST['education'];
     $secondname = $_POST['secondname'];
-
     $sql = "UPDATE `user` SET `firstname`='$name', `email`='$email', `education`='$education', `secondname`='$secondname' WHERE `id`='$userId'";
     $result = $conn->query($sql);
-
     if ($result === true) {
         $res['error'] = false;
         $res['message'] = "User Updated Successfully";
@@ -98,8 +85,6 @@ if ($action == 'updateuser') {
         $res['sql_error'] = $conn->error;
     }
 }
-
-
 $conn->close();
 header("Content-type: application/json");
 echo json_encode($res);
