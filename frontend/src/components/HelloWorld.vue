@@ -126,7 +126,7 @@ methods: {
 
   showUpdateForm(user) {
     this.showUpdateFormFlag = true;
-    this.updateUserData = { ...user };
+    this.updateUserData = {...user };
   },
 
  hideUpdateForm() {
