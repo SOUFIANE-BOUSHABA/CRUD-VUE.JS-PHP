@@ -62,6 +62,23 @@ if ($action == 'getusers') {
     }
 }
 
+
+if ($action == 'deleteuser' && isset($_GET['id'])) {
+    $userId = $_GET['id'];
+    $sql = "DELETE FROM `user` WHERE `id` = $userId";
+    $result = $conn->query($sql);
+
+    if ($result === true) {
+        $res['error'] = false;
+        $res['message'] = "User Deleted Successfully";
+    } else {
+        $res['error'] = true;
+        $res['message'] = "Something Went Wrong";
+        $res['sql_error'] = $conn->error; 
+    }
+}
+
+
 $conn->close();
 header("Content-type: application/json");
 echo json_encode($res);

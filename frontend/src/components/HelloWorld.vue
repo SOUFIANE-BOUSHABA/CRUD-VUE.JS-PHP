@@ -37,7 +37,7 @@
       <h2>Registered Users</h2>
       <ul>
         <li v-for="user in Users" :key="user.id">
-          {{ user.name }} - {{ user.email }} - {{ user.education }} - {{ user.secondname }}   <button>delete</button>
+          {{ user.name }} - {{ user.email }} - {{ user.education }} - {{ user.secondname }}    <button @click="deleteUser(user.id)">Delete</button>
         </li>
       </ul>
     </div>
@@ -91,6 +91,21 @@ methods: {
           console.error(err);
         });
     },
+
+    deleteUser(userId) {
+    axios.delete(`http://localhost/CRUD-VUE.JS-PHP/backend/api.php?action=deleteuser&id=${userId}`)
+      .then((response) => {
+        if (!response.data.error) {
+          // Update the Users array after successful deletion
+          this.Users = this.Users.filter(user => user.id !== userId);
+        } else {
+          console.error(response.data.message);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  },
   },
 
   created() {
